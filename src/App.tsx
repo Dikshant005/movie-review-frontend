@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+
 import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 import Login from './pages/Login';
@@ -12,6 +14,7 @@ import Feed from './pages/Feed';
 import Watchlist from './pages/Watchlist';
 import Discover from './pages/Discover';
 import ProtectedRoute from './components/ProtectedRoute';
+
 import type { AppDispatch, RootState } from './store/store';
 import { fetchUserThunk } from './features/authSlice';
 
@@ -27,6 +30,16 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Toaster 
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: '#1f2937',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }
+        }} 
+      />
       <Routes>
         {/* Public Auth Routes */}
         <Route element={<AuthLayout />}>

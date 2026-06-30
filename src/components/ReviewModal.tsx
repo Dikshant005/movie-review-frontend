@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Star, Loader2, Send } from 'lucide-react';
 import { createReviewApi } from '../api/reviews';
 import type{ Movie } from '../api/movies';
+import toast from 'react-hot-toast';
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export default function ReviewModal({ isOpen, onClose, movie }: ReviewModalProps
     try {
       await createReviewApi(movie._id, rating, `<p>${reviewText}</p>`);
       setSuccess(true);
+      toast.success('Review submitted successfully!');
       setTimeout(() => {
         setSuccess(false);
         setRating(0);
@@ -44,7 +46,9 @@ export default function ReviewModal({ isOpen, onClose, movie }: ReviewModalProps
       }, 2000);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || "Failed to submit review.");
+      const msg = error.response?.data?.message || "Failed to submit review.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

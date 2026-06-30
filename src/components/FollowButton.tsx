@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { followUserApi, unfollowUserApi, getUserProfileApi } from '../api/users';
 import { useSelector } from 'react-redux';
 import type{ RootState } from '../store/store';
+import toast from 'react-hot-toast';
 
 export default function FollowButton({ username, targetUserId }: { username: string, targetUserId: string }) {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -25,12 +26,15 @@ export default function FollowButton({ username, targetUserId }: { username: str
       if (isFollowing) {
         await unfollowUserApi(targetUserId);
         setIsFollowing(false);
+        toast.success(`Unfollowed ${username}`);
       } else {
         await followUserApi(targetUserId);
         setIsFollowing(true);
+        toast.success(`Following ${username}`);
       }
     } catch (err) {
       console.error(err);
+      toast.error('Failed to update follow status');
     }
   };
 

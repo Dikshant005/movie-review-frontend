@@ -4,6 +4,7 @@ import { addToWatchlistApi, removeFromWatchlistApi, getWatchlistApi } from '../a
 import { useSelector } from 'react-redux';
 import type{ RootState } from '../store/store';
 import { type Movie } from '../api/movies';
+import toast from 'react-hot-toast';
 
 export default function WatchlistButton({ movie, className = "" }: { movie: Movie, className?: string }) {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -31,12 +32,15 @@ export default function WatchlistButton({ movie, className = "" }: { movie: Movi
       if (inWatchlist) {
         await removeFromWatchlistApi(movie._id);
         setInWatchlist(false);
+        toast.success(`Removed from watchlist`, { id: `watchlist-${movie._id}` });
       } else {
         await addToWatchlistApi(movie._id, movie.title, movie.posterUrl);
         setInWatchlist(true);
+        toast.success(`Added to watchlist`, { id: `watchlist-${movie._id}` });
       }
     } catch (err) {
       console.error(err);
+      toast.error(`Failed to update watchlist`);
     } finally {
       setLoading(false);
     }
