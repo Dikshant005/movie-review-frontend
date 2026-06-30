@@ -23,7 +23,7 @@ export interface Movie {
 // Map TMDB response to our Movie interface
 const mapTmdbToMovie = (tmdbMovie: { id: number; title?: string; name?: string; overview: string; poster_path?: string; backdrop_path?: string; release_date?: string; vote_average: number; }): Movie => ({
   _id: tmdbMovie.id.toString(),
-  title: tmdbMovie.title || tmdbMovie.name,
+  title: tmdbMovie.title || tmdbMovie.name || "Unknown Title",
   description: tmdbMovie.overview,
   posterUrl: tmdbMovie.poster_path ? `https://image.tmdb.org/t/p/w500${tmdbMovie.poster_path}` : '',
   backdropUrl: tmdbMovie.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : '',

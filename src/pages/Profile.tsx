@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Star, Loader2, Calendar, ArrowLeft } from 'lucide-react';
+import { Mail, Star, Loader2, Calendar, ArrowLeft } from 'lucide-react';
 import type { RootState } from '../store/store';
 import { getUserReviewsApi, type Review } from '../api/reviews';
 import { getMovieDetailsApi, type MovieDetails } from '../api/movies';
