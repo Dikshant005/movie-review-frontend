@@ -31,8 +31,8 @@ const mapTmdbToMovie = (tmdbMovie: { id: number; title?: string; name?: string; 
   averageRating: tmdbMovie.vote_average,
 });
 
-export const getTrendingMoviesApi = async (): Promise<Movie[]> => {
-  const response = await tmdbApi.get("/trending/movie/day");
+export const getTrendingMoviesApi = async (page: number = 1): Promise<Movie[]> => {
+  const response = await tmdbApi.get("/trending/movie/day", { params: { page } });
   return response.data.results.map(mapTmdbToMovie);
 };
 
@@ -84,4 +84,18 @@ export const getMovieCreditsApi = async (tmdbId: string): Promise<CastMember[]> 
     character: cast.character,
     profileUrl: cast.profile_path ? `https://image.tmdb.org/t/p/w200${cast.profile_path}` : null,
   }));
+};
+
+export interface DiscoverFilters {
+  with_genres?: string;
+  'primary_release_date.gte'?: string;
+  'primary_release_date.lte'?: string;
+  'vote_average.gte'?: number;
+  with_original_language?: string;
+  page?: number;
+}
+
+export const discoverMoviesApi = async (filters: DiscoverFilters): Promise<Movie[]> => {
+  const response = await tmdbApi.get("/discover/movie", { params: { ...filters, sort_by: 'popularity.desc' } });
+  return response.data.results.map(mapTmdbToMovie);
 };

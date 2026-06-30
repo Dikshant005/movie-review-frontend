@@ -15,11 +15,16 @@ const initialState: MoviesState = {
   error: null,
 };
 
-export const fetchTrendingMovies = createAsyncThunk<Movie[], void, { rejectValue: string }>(
+interface FetchTrendingArgs {
+  page?: number;
+  append?: boolean;
+}
+
+export const fetchTrendingMovies = createAsyncThunk<Movie[], FetchTrendingArgs | undefined, { rejectValue: string }>(
   "movies/fetchTrending",
-  async (_, { rejectWithValue }) => {
+  async (args, { rejectWithValue }) => {
     try {
-      return await getTrendingMoviesApi();
+      return await getTrendingMoviesApi(args?.page || 1);
     } catch (error) {
       if (error instanceof Error) return rejectWithValue(error.message);
       return rejectWithValue("Failed to fetch trending movies");
@@ -51,7 +56,15 @@ const moviesSlice = createSlice({
     });
     builder.addCase(fetchTrendingMovies.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.trendingMovies = action.payload;
+      const append = action.meta.arg?.append;
+      if (append) {
+        // filter out duplicates just in case
+        const existingIds = new Set(state.trendingMovies.map(m => m._id));
+        const newMovies = action.payload.filter(m => !existingIds.has(m._id));
+        state.trendingMovies = [...state.trendingMovies, ...newMovies];
+      } else {
+        state.trendingMovies = action.payload;
+      }
     });
     builder.addCase(fetchTrendingMovies.rejected, (state, action) => {
       state.isLoading = false;

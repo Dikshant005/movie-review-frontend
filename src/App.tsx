@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard';
 import MovieDetail from './pages/MovieDetail';
 import Profile from './pages/Profile';
 import Feed from './pages/Feed';
+import Watchlist from './pages/Watchlist';
+import Discover from './pages/Discover';
 import ProtectedRoute from './components/ProtectedRoute';
 import type { AppDispatch, RootState } from './store/store';
 import { fetchUserThunk } from './features/authSlice';
@@ -39,6 +41,8 @@ function App() {
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/feed" element={<Feed />} />
+            <Route path="/watchlist" element={<Watchlist />} />
+            <Route path="/discover" element={<Discover />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Route>

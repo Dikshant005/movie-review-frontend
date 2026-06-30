@@ -29,8 +29,14 @@ export default function DashboardLayout() {
 
         {/* User Actions */}
         <div className="flex items-center gap-6">
+          <Link to="/discover" className="hidden md:flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-bold uppercase tracking-wider">
+            Discover
+          </Link>
           <Link to="/feed" className="hidden md:flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-bold uppercase tracking-wider">
             Feed
+          </Link>
+          <Link to="/watchlist" className="hidden md:flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-bold uppercase tracking-wider">
+            Watchlist
           </Link>
 
           <Link to="/profile" className="hidden md:flex items-center gap-3 cursor-pointer group">

@@ -9,6 +9,7 @@ import TrailerModal from '../components/TrailerModal';
 import ReviewModal from '../components/ReviewModal';
 import ReviewInteraction from '../components/ReviewInteraction';
 import FollowButton from '../components/FollowButton';
+import WatchlistButton from '../components/WatchlistButton';
 
 export default function MovieDetail() {
   const { id } = useRouteParams<{ id: string }>();
@@ -171,6 +172,9 @@ export default function MovieDetail() {
                   <Star className="w-5 h-5" />
                   Write Review
                 </button>
+                <div className="flex items-center ml-4">
+                  <WatchlistButton movie={movie} className="scale-125" />
+                </div>
               </div>
             </motion.div>
           </div>
