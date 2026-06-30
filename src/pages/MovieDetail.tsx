@@ -7,6 +7,8 @@ import { getMovieDetailsApi, getMovieCreditsApi, type MovieDetails,type CastMemb
 import { getMovieReviewsApi, type Review } from '../api/reviews';
 import TrailerModal from '../components/TrailerModal';
 import ReviewModal from '../components/ReviewModal';
+import ReviewInteraction from '../components/ReviewInteraction';
+import FollowButton from '../components/FollowButton';
 
 export default function MovieDetail() {
   const { id } = useRouteParams<{ id: string }>();
@@ -254,7 +256,10 @@ export default function MovieDetail() {
                             <span className="text-xs font-bold">{review.users?.username?.charAt(0).toUpperCase() || 'U'}</span>
                           </div>
                         </div>
-                        <span className="font-bold text-gray-200 text-sm">{review.users?.username || 'Unknown User'}</span>
+                        <span className="font-bold text-gray-200 text-sm mr-2">{review.users?.username || 'Unknown User'}</span>
+                        {review.users?.username && (
+                          <FollowButton username={review.users.username} targetUserId={review.user_id} />
+                        )}
                       </div>
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map(star => (
@@ -269,9 +274,10 @@ export default function MovieDetail() {
                       className="text-gray-300 text-sm prose prose-invert max-w-none mt-3"
                       dangerouslySetInnerHTML={{ __html: review.content_html }}
                     />
-                    <div className="mt-3 text-xs text-gray-600 font-medium">
+                    <div className="mt-3 text-xs text-gray-600 font-medium mb-1">
                       {new Date(review.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                     </div>
+                    <ReviewInteraction review={review} />
                   </div>
                 ))
               )}

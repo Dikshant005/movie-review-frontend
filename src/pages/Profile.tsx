@@ -6,6 +6,7 @@ import type { RootState } from '../store/store';
 import { getUserReviewsApi, type Review } from '../api/reviews';
 import { getMovieDetailsApi, type MovieDetails } from '../api/movies';
 import { motion } from 'framer-motion';
+import ReviewInteraction from '../components/ReviewInteraction';
 
 function ReviewCard({ review }: { review: Review }) {
   const navigate = useNavigate();
@@ -59,9 +60,10 @@ function ReviewCard({ review }: { review: Review }) {
           </div>
 
           <div 
-            className="text-gray-300 text-sm line-clamp-3 prose prose-invert max-w-none"
+            className="text-gray-300 text-sm mt-3 prose prose-invert line-clamp-3"
             dangerouslySetInnerHTML={{ __html: review.content_html }}
           />
+          <ReviewInteraction review={review} />
         </div>
       </div>
     </motion.div>

@@ -29,6 +29,10 @@ export default function DashboardLayout() {
 
         {/* User Actions */}
         <div className="flex items-center gap-6">
+          <Link to="/feed" className="hidden md:flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-bold uppercase tracking-wider">
+            Feed
+          </Link>
+
           <Link to="/profile" className="hidden md:flex items-center gap-3 cursor-pointer group">
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-red-600 to-purple-600 p-[2px] group-hover:shadow-[0_0_15px_rgba(220,38,38,0.5)] transition-shadow">
               <div className="w-full h-full bg-black rounded-full flex items-center justify-center">

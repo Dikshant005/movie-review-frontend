@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import MovieDetail from './pages/MovieDetail';
 import Profile from './pages/Profile';
+import Feed from './pages/Feed';
 import ProtectedRoute from './components/ProtectedRoute';
 import type { AppDispatch, RootState } from './store/store';
 import { fetchUserThunk } from './features/authSlice';
@@ -37,6 +38,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/feed" element={<Feed />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Route>
