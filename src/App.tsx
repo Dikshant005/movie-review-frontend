@@ -13,7 +13,9 @@ import Profile from './pages/Profile';
 import Feed from './pages/Feed';
 import Watchlist from './pages/Watchlist';
 import Discover from './pages/Discover';
+import Admin from './pages/Admin';
 import ProtectedRoute from './components/ProtectedRoute';
+import RequireAdmin from './components/RequireAdmin';
 
 import type { AppDispatch, RootState } from './store/store';
 import { fetchUserThunk } from './features/authSlice';
@@ -56,6 +58,9 @@ function App() {
             <Route path="/feed" element={<Feed />} />
             <Route path="/watchlist" element={<Watchlist />} />
             <Route path="/discover" element={<Discover />} />
+            <Route element={<RequireAdmin />}>
+              <Route path="/admin" element={<Admin />} />
+            </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Route>

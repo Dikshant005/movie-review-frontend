@@ -1,31 +1,24 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Play, Star, Loader2 } from 'lucide-react';
-import type{ AppDispatch, RootState } from '../store/store';
-import { fetchTrendingMovies } from '../features/moviesSlice';
+import { useGetTrendingMoviesQuery } from '../services/tmdbApi';
 import TrailerModal from '../components/TrailerModal';
 import ReviewModal from '../components/ReviewModal';
 import MovieCard from '../components/MovieCard';
 import type{ Movie } from '../api/movies';
 
 export default function Dashboard() {
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { trendingMovies, isLoading, error } = useSelector((state: RootState) => state.movies);
-
   const [trailerTmdbId, setTrailerTmdbId] = useState<string | null>(null);
   const [reviewMovie, setReviewMovie] = useState<Movie | null>(null);
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    dispatch(fetchTrendingMovies({ page, append: page > 1 }));
-  }, [dispatch, page]);
+  const { data: trendingMovies = [], isLoading, isFetching, error } = useGetTrendingMoviesQuery(page);
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastMovieElementRef = useCallback((node: HTMLDivElement | null) => {
-    if (isLoading) return;
+    if (isFetching) return;
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
@@ -33,7 +26,7 @@ export default function Dashboard() {
       }
     });
     if (node) observer.current.observe(node);
-  }, [isLoading]);
+  }, [isFetching]);
 
   if (isLoading && page === 1 && trendingMovies.length === 0) {
     return (
@@ -72,15 +65,15 @@ export default function Dashboard() {
       />
 
       {/* Hero / Featured Section */}
-      <section className="relative w-full h-[70vh] min-h-[500px]">
+      <section className="relative w-full h-[70vh] min-h-125">
         <div className="absolute inset-0">
           <img 
             src={featuredMovie.backdropUrl || featuredMovie.posterUrl} 
             alt={featuredMovie.title} 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-black via-black/50 to-transparent" />
         </div>
 
         <div className="relative z-10 h-full flex flex-col justify-end px-8 md:px-16 pb-16 max-w-4xl">
@@ -145,7 +138,7 @@ export default function Dashboard() {
 
         {error && (
            <div className="mb-6 p-4 rounded-lg bg-red-900/20 border border-red-500/50 text-red-400 text-sm">
-             Failed to load movies: {error}.
+             Failed to load movies. Please try again.
            </div>
         )}
 
@@ -176,7 +169,7 @@ export default function Dashboard() {
           })}
         </div>
         
-        {isLoading && page > 1 && (
+        {isFetching && page > 1 && (
           <div className="w-full flex justify-center mt-12">
             <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
           </div>

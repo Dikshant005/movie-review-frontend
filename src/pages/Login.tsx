@@ -46,7 +46,7 @@ export default function Login() {
 
           {error && (
             <div className="mb-6 p-3 rounded-lg bg-red-900/50 border border-red-500/50 text-red-200 text-sm text-center">
-              {error}
+              {typeof error === 'string' ? error : 'Authentication failed'}
             </div>
           )}
 

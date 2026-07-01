@@ -38,9 +38,15 @@ export default function DashboardLayout() {
           <Link to="/watchlist" className="hidden md:flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-bold uppercase tracking-wider">
             Watchlist
           </Link>
+          
+          {user?.role === 'ADMIN' && (
+            <Link to="/admin" className="hidden md:flex items-center gap-2 text-red-500 hover:text-red-400 transition-colors text-sm font-bold uppercase tracking-wider bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-500/20">
+              Admin Panel
+            </Link>
+          )}
 
           <Link to="/profile" className="hidden md:flex items-center gap-3 cursor-pointer group">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-red-600 to-purple-600 p-[2px] group-hover:shadow-[0_0_15px_rgba(220,38,38,0.5)] transition-shadow">
+            <div className="w-10 h-10 rounded-full bg-linear-to-tr from-red-600 to-purple-600 p-0.5 group-hover:shadow-[0_0_15px_rgba(220,38,38,0.5)] transition-shadow">
               <div className="w-full h-full bg-black rounded-full flex items-center justify-center">
                 <span className="text-sm font-bold text-white uppercase">
                   {user?.username?.charAt(0) || 'U'}

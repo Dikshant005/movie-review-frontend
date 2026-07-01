@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { discoverMoviesApi, type Movie, type DiscoverFilters } from '../api/movies';
+import { useState, useRef, useCallback } from 'react';
+import { useDiscoverMoviesQuery } from '../services/tmdbApi';
+import type { Movie, DiscoverFilters } from '../api/movies';
 import MovieCard from '../components/MovieCard';
 import { Loader2, Search, Filter } from 'lucide-react';
 import TrailerModal from '../components/TrailerModal';
@@ -36,8 +37,6 @@ const DECADES = [
 ];
 
 export default function Discover() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
@@ -51,47 +50,21 @@ export default function Discover() {
     language: ''
   });
 
-  const fetchMovies = async (pageNum: number, currentFilters: typeof filters) => {
-    setLoading(true);
-    try {
-      const activeDecade = DECADES.find(d => d.label === currentFilters.decade);
-      
-      const apiFilters: DiscoverFilters = { page: pageNum };
-      if (currentFilters.genre) apiFilters.with_genres = currentFilters.genre;
-      if (currentFilters.rating) apiFilters['vote_average.gte'] = Number(currentFilters.rating);
-      if (currentFilters.language) apiFilters.with_original_language = currentFilters.language;
-      if (activeDecade) {
-        apiFilters['primary_release_date.gte'] = activeDecade.gte;
-        apiFilters['primary_release_date.lte'] = activeDecade.lte;
-      }
+  const activeDecade = DECADES.find(d => d.label === filters.decade);
+  const queryFilters: DiscoverFilters = { page };
+  if (filters.genre) queryFilters.with_genres = filters.genre;
+  if (filters.rating) queryFilters['vote_average.gte'] = Number(filters.rating);
+  if (filters.language) queryFilters.with_original_language = filters.language;
+  if (activeDecade) {
+    queryFilters['primary_release_date.gte'] = activeDecade.gte;
+    queryFilters['primary_release_date.lte'] = activeDecade.lte;
+  }
 
-      const results = await discoverMoviesApi(apiFilters);
-      
-      if (results.length === 0) {
-        setHasMore(false);
-      } else {
-        setMovies(prev => pageNum === 1 ? results : [...prev, ...results]);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMovies(1, filters);
-  }, [filters]);
-
-  useEffect(() => {
-    if (page > 1) {
-      fetchMovies(page, filters);
-    }
-  }, [page]);
+  const { data: movies = [], isLoading: loading, isFetching } = useDiscoverMoviesQuery(queryFilters);
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastMovieElementRef = useCallback((node: HTMLDivElement | null) => {
-    if (loading) return;
+    if (isFetching) return;
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
@@ -99,10 +72,9 @@ export default function Discover() {
       }
     });
     if (node) observer.current.observe(node);
-  }, [loading, hasMore]);
+  }, [isFetching, hasMore]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setMovies([]); // Clear immediately
     setPage(1);
     setHasMore(true);
     setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));

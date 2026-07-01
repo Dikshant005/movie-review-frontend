@@ -5,6 +5,7 @@ interface User {
   userId: string;
   username: string;
   email: string;
+  role?: string;
 }
 
 interface AuthState {
@@ -32,6 +33,7 @@ interface AuthResponse {
   username: string;
   email: string;
   accessToken: string;
+  role?: string;
 }
 
 const savedUser = localStorage.getItem("user");
@@ -54,6 +56,7 @@ const setAuthState = (state: AuthState, payload: AuthResponse) => {
     userId: payload.userId,
     username: payload.username,
     email: payload.email,
+    role: payload.role,
   };
 
   state.accessToken = payload.accessToken;
@@ -171,6 +174,7 @@ const authSlice = createSlice({
           userId: action.payload.userId,
           username: action.payload.username,
           email: action.payload.email,
+          role: action.payload.role,
         };
       })
       .addCase(fetchUserThunk.rejected, (state) => {
