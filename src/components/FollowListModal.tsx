@@ -1,6 +1,5 @@
 import { X, User as UserIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import type { UserListProfile } from '../api/users';
 
 interface FollowListModalProps {
@@ -11,7 +10,6 @@ interface FollowListModalProps {
 }
 
 export default function FollowListModal({ isOpen, onClose, title, users }: FollowListModalProps) {
-  const navigate = useNavigate();
 
   return (
     <AnimatePresence>
