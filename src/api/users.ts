@@ -6,6 +6,13 @@ export interface UserProfile {
   email?: string;
   created_at: string;
   isFollowing?: boolean;
+  followersCount?: number;
+  followingCount?: number;
+}
+
+export interface UserListProfile {
+  id: string;
+  username: string;
 }
 
 export const getUserProfileApi = async (username: string): Promise<UserProfile> => {
@@ -19,4 +26,14 @@ export const followUserApi = async (userId: string): Promise<void> => {
 
 export const unfollowUserApi = async (userId: string): Promise<void> => {
   await API.delete(`/users/${userId}/follow`);
+};
+
+export const getFollowersApi = async (username: string): Promise<UserListProfile[]> => {
+  const response = await API.get<UserListProfile[]>(`/users/profile/${username}/followers`);
+  return response.data;
+};
+
+export const getFollowingApi = async (username: string): Promise<UserListProfile[]> => {
+  const response = await API.get<UserListProfile[]>(`/users/profile/${username}/following`);
+  return response.data;
 };

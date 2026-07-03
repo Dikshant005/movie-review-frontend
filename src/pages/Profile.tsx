@@ -5,8 +5,10 @@ import { Mail, Star, Loader2, Calendar, ArrowLeft } from 'lucide-react';
 import type { RootState } from '../store/store';
 import { getUserReviewsApi, type Review } from '../api/reviews';
 import { getMovieDetailsApi, type MovieDetails } from '../api/movies';
+import { getUserProfileApi, getFollowersApi, getFollowingApi, type UserProfile, type UserListProfile } from '../api/users';
 import { motion } from 'framer-motion';
 import ReviewInteraction from '../components/ReviewInteraction';
+import FollowListModal from '../components/FollowListModal';
 
 function ReviewCard({ review }: { review: Review }) {
   const navigate = useNavigate();
@@ -76,6 +78,44 @@ export default function Profile() {
   
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const [fullProfile, setFullProfile] = useState<UserProfile | null>(null);
+  const [isFollowersOpen, setIsFollowersOpen] = useState(false);
+  const [isFollowingOpen, setIsFollowingOpen] = useState(false);
+  const [modalUsers, setModalUsers] = useState<UserListProfile[]>([]);
+  const [modalTitle, setModalTitle] = useState('');
+
+  useEffect(() => {
+    if (user?.username) {
+      getUserProfileApi(user.username)
+        .then(setFullProfile)
+        .catch(console.error);
+    }
+  }, [user?.username]);
+
+  const handleOpenFollowers = async () => {
+    if (!user?.username) return;
+    try {
+      const followers = await getFollowersApi(user.username);
+      setModalUsers(followers);
+      setModalTitle('Followers');
+      setIsFollowersOpen(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleOpenFollowing = async () => {
+    if (!user?.username) return;
+    try {
+      const following = await getFollowingApi(user.username);
+      setModalUsers(following);
+      setModalTitle('Following');
+      setIsFollowingOpen(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -116,10 +156,29 @@ export default function Profile() {
             <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
               {user?.username || 'Guest'}
             </h1>
-            <p className="text-gray-400 flex items-center gap-2">
+            <p className="text-gray-400 flex items-center gap-2 mb-4">
               <Mail className="w-4 h-4" />
               {user?.email || 'No email provided'}
             </p>
+            
+            {fullProfile && (
+              <div className="flex gap-6">
+                <div 
+                  className="flex flex-col items-center cursor-pointer hover:text-white transition-colors text-gray-300"
+                  onClick={handleOpenFollowers}
+                >
+                  <span className="text-xl font-bold">{fullProfile.followersCount || 0}</span>
+                  <span className="text-sm text-gray-500">Followers</span>
+                </div>
+                <div 
+                  className="flex flex-col items-center cursor-pointer hover:text-white transition-colors text-gray-300"
+                  onClick={handleOpenFollowing}
+                >
+                  <span className="text-xl font-bold">{fullProfile.followingCount || 0}</span>
+                  <span className="text-sm text-gray-500">Following</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -157,6 +216,16 @@ export default function Profile() {
           </div>
         )}
       </div>
+
+      <FollowListModal 
+        isOpen={isFollowersOpen || isFollowingOpen}
+        onClose={() => {
+          setIsFollowersOpen(false);
+          setIsFollowingOpen(false);
+        }}
+        title={modalTitle}
+        users={modalUsers}
+      />
     </div>
   );
 }
