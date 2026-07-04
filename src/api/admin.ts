@@ -5,6 +5,7 @@ export interface AdminUser {
   username: string;
   email: string;
   role: string;
+  is_disabled: boolean;
   created_at: string;
   _count: {
     reviews: number;
@@ -37,4 +38,9 @@ export const getAdminReviewsApi = async (): Promise<AdminReview[]> => {
 
 export const deleteAdminReviewApi = async (id: string): Promise<void> => {
   await api.delete(`/admin/reviews/${id}`);
+};
+
+export const toggleUserStatusApi = async (id: string): Promise<{ is_disabled: boolean }> => {
+  const response = await api.patch(`/admin/users/${id}/toggle-status`);
+  return response.data;
 };

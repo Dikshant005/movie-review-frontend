@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getAdminUsersApi, getAdminReviewsApi, deleteAdminReviewApi, type AdminUser, type AdminReview } from '../api/admin';
-import { Trash2, Users, MessageSquare, Shield, Loader2 } from 'lucide-react';
+import { getAdminUsersApi, getAdminReviewsApi, deleteAdminReviewApi, toggleUserStatusApi, type AdminUser, type AdminReview } from '../api/admin';
+import { Trash2, Users, MessageSquare, Shield, Loader2, Ban, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Admin() {
@@ -45,6 +45,21 @@ export default function Admin() {
     }
   };
 
+  const handleToggleUser = async (id: string) => {
+    try {
+      const response = await toggleUserStatusApi(id);
+      setUsers(prev => prev.map(u => u.id === id ? { ...u, is_disabled: response.is_disabled } : u));
+      toast.success(response.is_disabled ? 'User disabled' : 'User enabled');
+    } catch (err: unknown) {
+      if(err instanceof Error){
+         console.error(err);
+        toast.error(err.message || 'Failed to toggle user status');
+      }
+     
+    }
+  };
+
+
   return (
     <div className="px-8 md:px-16 py-12 min-h-screen">
       <div className="flex items-center gap-3 mb-8">
@@ -85,9 +100,10 @@ export default function Admin() {
                 <tr>
                   <th className="px-6 py-4 rounded-tl-lg">Username</th>
                   <th className="px-6 py-4">Email</th>
-                  <th className="px-6 py-4">Role</th>
+                  <th className="px-6 py-4">Status / Role</th>
                   <th className="px-6 py-4">Joined</th>
-                  <th className="px-6 py-4 rounded-tr-lg text-right">Stats (Rev / Com)</th>
+                  <th className="px-6 py-4">Stats</th>
+                  <th className="px-6 py-4 rounded-tr-lg text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -96,13 +112,40 @@ export default function Admin() {
                     <td className="px-6 py-4 font-medium text-white">{user.username}</td>
                     <td className="px-6 py-4">{user.email}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${user.role === 'ADMIN' ? 'bg-red-500/20 text-red-500' : 'bg-blue-500/20 text-blue-500'}`}>
-                        {user.role}
-                      </span>
+                      <div className="flex flex-col gap-1 items-start">
+                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${user.role === 'ADMIN' ? 'bg-red-500/20 text-red-500' : 'bg-blue-500/20 text-blue-500'}`}>
+                          {user.role}
+                        </span>
+                        {user.is_disabled && (
+                          <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider bg-gray-500/20 text-gray-400">
+                            Disabled
+                          </span>
+                        )}
+                      </div>
                     </td>
-                    <td className="px-6 py-4">{new Date(user.created_at).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-sm text-gray-400">{new Date(user.created_at).toLocaleDateString()}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-yellow-500" title="Reviews">{user._count.reviews}</span> 
+                        <span className="text-gray-600">/</span>
+                        <span className="text-blue-400" title="Comments">{user._count.comments}</span>
+                      </div>
+                    </td>
                     <td className="px-6 py-4 text-right">
-                      <span className="text-yellow-500">{user._count.reviews}</span> / <span className="text-blue-400">{user._count.comments}</span>
+                      {user.role !== 'ADMIN' && (
+                        <button
+                          onClick={() => handleToggleUser(user.id)}
+                          className={`p-2 rounded-lg transition-colors flex items-center gap-2 ml-auto ${
+                            user.is_disabled 
+                              ? 'bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white'
+                              : 'bg-orange-500/20 text-orange-500 hover:bg-orange-500 hover:text-white'
+                          }`}
+                          title={user.is_disabled ? "Enable User" : "Disable User"}
+                        >
+                          {user.is_disabled ? <CheckCircle className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
+                          <span className="text-sm font-bold">{user.is_disabled ? 'Enable' : 'Disable'}</span>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, ToastBar } from 'react-hot-toast';
 
 import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -33,15 +33,32 @@ function App() {
   return (
     <BrowserRouter>
       <Toaster 
-        position="bottom-right"
-        toastOptions={{
-          style: {
-            background: '#1f2937',
-            color: '#fff',
-            border: '1px solid rgba(255,255,255,0.1)'
-          }
-        }} 
-      />
+        position="top-right"
+        containerStyle={{
+          top: 40,
+          right: 40,
+        }}
+      >
+        {(t) => (
+          <div
+            style={{
+              opacity: t.visible ? 1 : 0,
+              transform: t.visible ? 'translateX(0)' : 'translateX(120%)',
+              transition: 'all 0.4s cubic-bezier(0.21, 1.02, 0.73, 1)',
+            }}
+          >
+            <ToastBar 
+              toast={t}
+              style={{
+                background: '#1f2937',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+              }}
+            />
+          </div>
+        )}
+      </Toaster>
       <Routes>
         {/* Public Auth Routes */}
         <Route element={<AuthLayout />}>

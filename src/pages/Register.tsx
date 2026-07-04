@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { Mail, Lock, User, UserPlus, Loader2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import type{ AppDispatch, RootState } from '../store/store';
+import type { AppDispatch, RootState } from '../store/store';
 import { registerUserThunk } from '../features/authSlice';
 
 export default function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  
+
   const { isLoading, error } = useSelector((state: RootState) => state.auth);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,24 +22,27 @@ export default function Register() {
     if (!username || !email || !password) return;
 
     const result = await dispatch(registerUserThunk({ username, email, password }));
-    
+
     if (registerUserThunk.fulfilled.match(result)) {
-      navigate('/'); // Or wherever you want after successful registration
+      toast.success('Successfully registered!');
+      navigate('/');
+    } else {
+      toast.error(result.payload as string || 'Registration failed');
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="w-full max-w-md"
     >
       <div className="backdrop-blur-xl bg-black/60 border border-white/10 p-8 rounded-3xl shadow-2xl relative overflow-hidden group">
-        
+
         {/* Subtle glow effect behind form */}
         <div className="absolute -inset-0.5 bg-linear-to-br from-red-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition duration-700 blur-xl"></div>
-        
+
         <div className="relative z-10">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-black text-white tracking-tight mb-2">Join the Family</h1>
@@ -58,7 +62,7 @@ export default function Register() {
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <User className="h-5 w-5 text-gray-500" />
                 </div>
-                <input 
+                <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -75,7 +79,7 @@ export default function Register() {
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-500" />
                 </div>
-                <input 
+                <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -92,7 +96,7 @@ export default function Register() {
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-500" />
                 </div>
-                <input 
+                <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -103,7 +107,7 @@ export default function Register() {
               </div>
             </div>
 
-            <button 
+            <button
               type="submit"
               disabled={isLoading}
               className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-70 disabled:hover:bg-red-600 disabled:cursor-not-allowed text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-95 shadow-[0_0_20px_rgba(220,38,38,0.4)] mt-4"

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { loginApi, registerApi, getMeApi, type UserResponse } from "../api/auth";
+import { isAxiosError } from "axios";
 
 interface User {
   userId: string;
@@ -72,11 +73,13 @@ export const loginUserThunk = createAsyncThunk<
 >("auth/login", async ({ email, password }, { rejectWithValue }) => {
   try {
     return await loginApi(email, password);
-  } catch (error) {
+  } catch (error: any) {
+    if (isAxiosError(error)) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
     if (error instanceof Error) {
       return rejectWithValue(error.message);
     }
-
     return rejectWithValue("Something went wrong");
   }
 });
@@ -89,11 +92,13 @@ export const registerUserThunk = createAsyncThunk<
 >("auth/register", async ({ username, email, password }, { rejectWithValue }) => {
   try {
     return await registerApi(username, email, password);
-  } catch (error) {
+  } catch (error: any) {
+    if (isAxiosError(error)) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
     if (error instanceof Error) {
       return rejectWithValue(error.message);
     }
-
     return rejectWithValue("Something went wrong");
   }
 });
